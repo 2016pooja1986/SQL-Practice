@@ -14,6 +14,10 @@ from employees;
 
 ---  Q-5. Write an SQL query to find the position of the alphabet (‘a’) in the first name column ‘Alexander’ from employees table.---
 select instr(first_name,'a') from employees where first_name='Alexander' limit 1;
+--- Apporach 1
+SELECT LOCATE('a',FIRST_NAME) FROM employees WHERE first_name='Alexander' limit 1;
+--- Approach 2
+SELECT POSITION('a' IN FIRST_NAME) FROM employees WHERE first_name='Alexander' limit 1;
 
 --- Q-6. Write an SQL query to print the name of employees having the highest salary in each department.---
 select department_name,first_name,
@@ -27,10 +31,7 @@ select rtrim(first_name) as first_name from employees;
 
 select distinct department_name, length(department_name) as dept_name_len from departments;
 --- Q-9. Write an SQL query to fetch nth max salaries from a table.---
-select *,
-nth_value(salary,2) over(order by salary desc range between unbounded preceding and unbounded following) as 2nd_max_salary 
-from employees;
-
+SELECT DISTINCT(salary) FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1;
 --- Q-10. Write an SQL query to print the FIRST_NAME from employees table after replacing ‘a’ with ‘A’.---
 select replace(first_name,'a','A') as FiRsT_nAmE from employees;
 --- Q-11. Write an SQL query to print all Worker details from the employees table order by FIRST_NAME Ascending and DEPARTMENT Descending.---
@@ -60,10 +61,8 @@ where year(hire_date) ='1996' and month(hire_date) = 2;
 select  first_name,count(first_name) as count from employees group by first_name
 having count>1;
 --- Q-18. How to remove duplicate rows from Employees table.---
-select first_name,last_name,email,phone_number,hire_date,job_id ,count(*) 
-from employees group by first_name,last_name,email,phone_number,hire_date,job_id
-having count(*) >1;
-
+DELETE e1.* from employees e1 INNER JOIN employees e2 
+WHERE e1.employee_id > e2.employee_id AND e1.first_name = e2.first_name AND e1.last_name = e2.last_name ;
 --- Q-19. Write an SQL query to show only odd rows from a table.---
 select * from 
 (
@@ -71,6 +70,8 @@ select
 row_number() over(order by employee_id) as rn,e.* from employees e
 ) x
 where x.rn % 2 !=0;
+--- or
+SELECT * FROM employees Where MOD(employee_id,2) = 1;
 --- Q-20. Write an SQL query to clone a new table from another table.--
 create table clone_emp like employees;
 insert into clone_emp select * from employees;
@@ -81,6 +82,7 @@ select * from clone_emp;
 select employee_id,e.department_id,department_name,first_name,last_name,email
 from employees e
 join departments d on e.department_id =d.department_id;
+
 --- Q-22. Write an SQL query to show records from one table that another table does not have.---
 SELECT *
 FROM departments
@@ -97,6 +99,8 @@ select concat(x.first_name,' ',x.last_name) Emp_name,x.salary as 5th_highest_sal
 dense_rank() over(order by salary desc) as dr 
 from employees) x
 where x.dr=5;
+--- or 
+SELECT DISTINCT(salary) FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 4;
 --- Q-26. Write an SQL query to fetch the list of employees with the same salary.---
 SELECT employee_id, EmpName, salary From
  (
@@ -104,6 +108,5 @@ SELECT employee_id, EmpName, salary From
  FROM employees
  ) x
 WHERE x.SalaryCnt>1
-ORDER By salary Desc
+ORDER By salary Desc;
 
-    
